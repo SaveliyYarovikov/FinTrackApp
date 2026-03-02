@@ -4,7 +4,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     zip \
     unzip \
-    libicu-dev
+    libicu-dev \
+    default-mysql-client
 
 RUN curl -sL https://deb.nodesource.com/setup_25.x | bash \
     && apt-get install nodejs -y

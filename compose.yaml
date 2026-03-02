@@ -10,7 +10,7 @@ services:
       - ./src:/var/www
       - /home/nyash/PhpstormProjects/logs/php/First_errors.log:/var/log/php_error.log
   nginx:
-    image: nginx:1.29.4
+    image: nginx:1.29.5
     container_name: work-nginx
     restart: always
     ports:
@@ -20,15 +20,55 @@ services:
       - ./conf/nginx:/etc/nginx/conf.d
     depends_on:
       - app
+  vite:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: work-vite
+    restart: always
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173", "--strictPort"]
+    depends_on:
+      - app
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+    logging:
+      driver: "none"
+    ports:
+      - "8025:8025"
+      - "1025:1025"
   db:
     container_name: work-db
-    image: mysql:9.5.0
+    image: mysql:9.6.0
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
+  db-backup:
+    image: mysql:9.6.0
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - /home/nyash/PhpstormProjects/dbBackup:/backup
+    entrypoint: >
+      sh -c "
+      while true; do
+        mysqldump -h db -uroot -proot --all-databases > /backup/backup_$(date +%F_%H-%M).sql;
+        sleep 86400;
+      done
+      "
 volumes:
   mysql_data:

@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\Transactions;
+
+use App\Models\Account;
+use App\Models\Category;
+use App\Support\Money;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreIncomeRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'account_id' => [
+                'required',
+                'integer',
+                static function (string $attribute, mixed $value, \Closure $fail): void {
+                    $account = Account::query()->find((int) $value);
+
+                    if ($account === null) {
+                        $fail('Selected account is invalid.');
+                        return;
+                    }
+
+                    if ($account->isArchived()) {
+                        $fail('Archived account cannot be used.');
+                    }
+                },
+            ],
+            'category_id' => [
+                'nullable',
+                'integer',
+                static function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ($value === null || $value === '') {
+                        return;
+                    }
+
+                    $category = Category::query()->find((int) $value);
+
+                    if ($category === null) {
+                        $fail('Selected category does not exist.');
+                    }
+                },
+            ],
+            'amount' => [
+                'required',
+                'string',
+                'regex:/^\d+(\.\d{1,2})?$/',
+                static function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (Money::parseMajorToMinor((string) $value) <= 0) {
+                        $fail('Amount must be greater than zero.');
+                    }
+                },
+            ],
+            'occurred_at' => ['required', 'date'],
+            'description' => ['nullable', 'string', 'max:255'],
+        ];
+    }
+}

@@ -1,35 +1,78 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
-/**
- * @property int $id
- * @property int|null $user_id
- * @property string $name
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection<int, Transaction> $transactions
- * @property-read int|null $transactions_count
- * @property-read User|null $user
- * @method static Builder<static>|Category newModelQuery()
- * @method static Builder<static>|Category newQuery()
- * @method static Builder<static>|Category query()
- * @method static Builder<static>|Category whereCreatedAt($value)
- * @method static Builder<static>|Category whereId($value)
- * @method static Builder<static>|Category whereName($value)
- * @method static Builder<static>|Category whereUpdatedAt($value)
- * @method static Builder<static>|Category whereUserId($value)
- * @mixin \Eloquent
- */
 class Category extends Model
 {
+    use HasFactory;
+
+    public const TYPE_INCOME = 'income';
+    public const TYPE_EXPENSE = 'expense';
+
+    private static ?bool $typeColumnExists = null;
+
+    private static ?bool $isSystemColumnExists = null;
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'type',
+        'is_system',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_system' => 'boolean',
+        ];
+    }
+
+    public function scopeForUser(Builder $query, int $userId): Builder
+    {
+        if (! self::supportsIsSystemColumn()) {
+            return $query->where('user_id', $userId);
+        }
+
+        return $query->where(function (Builder $innerQuery) use ($userId): void {
+            $innerQuery
+                ->where('user_id', $userId)
+                ->orWhere(function (Builder $systemQuery): void {
+                    $systemQuery
+                        ->whereNull('user_id')
+                        ->where('is_system', true);
+                });
+        });
+    }
+
+    public static function supportsTypeColumn(): bool
+    {
+        if (self::$typeColumnExists === null) {
+            self::$typeColumnExists = Schema::hasTable('categories')
+                && Schema::hasColumn('categories', 'type');
+        }
+
+        return self::$typeColumnExists;
+    }
+
+    public static function supportsIsSystemColumn(): bool
+    {
+        if (self::$isSystemColumnExists === null) {
+            self::$isSystemColumnExists = Schema::hasTable('categories')
+                && Schema::hasColumn('categories', 'is_system');
+        }
+
+        return self::$isSystemColumnExists;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
