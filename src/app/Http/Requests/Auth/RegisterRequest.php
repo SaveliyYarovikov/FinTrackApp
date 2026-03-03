@@ -25,7 +25,18 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'confirmed', Password::defaults()]
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
+            'personal_data_consent' => ['accepted'],
         ];
     }
+
+//    /**
+//     * @return array<string, string>
+//     */
+//    public function messages(): array
+//    {
+//        return [
+//            'personal_data_consent.accepted' => 'Необходимо дать согласие на обработку персональных данных.',
+//        ];
+//    }
 }

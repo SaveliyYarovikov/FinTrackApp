@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
+ * @property Carbon|null $personal_data_consent_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Account> $accounts
@@ -43,6 +44,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|User whereId($value)
  * @method static Builder<static>|User whereName($value)
  * @method static Builder<static>|User wherePassword($value)
+ * @method static Builder<static>|User wherePersonalDataConsentAt($value)
  * @method static Builder<static>|User whereRememberToken($value)
  * @method static Builder<static>|User whereUpdatedAt($value)
  * @mixin \Eloquent
@@ -59,6 +61,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'personal_data_consent_at',
     ];
 
     /**
@@ -76,6 +79,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'personal_data_consent_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

@@ -220,7 +220,3 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (4,'2026_02_08_1131
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (5,'2026_02_08_113131_create_transactions_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (6,'2026_02_09_000001_create_accounts_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (7,'2026_02_11_000001_create_budgets_table',1);
--- INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (17,'2026_02_25_000002_create_ledger_entries_table',1);
--- INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (18,'2026_02_25_000003_alter_categories_table_for_ledger',1);
--- INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (19,'2026_02_25_000004_drop_legacy_transactions_table',1);
--- INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (20,'2026_02_25_000005_rename_ledger_entries_to_transactions_table',1);
