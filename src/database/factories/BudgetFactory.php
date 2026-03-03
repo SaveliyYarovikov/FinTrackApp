@@ -28,7 +28,7 @@ class BudgetFactory extends Factory
             ])->id,
             'period_start' => $periodStart,
             'period_end' => $periodEnd,
-            'limit_minor' => $this->faker->numberBetween(100, 100000),
+            'limit' => $this->faker->numberBetween(100, 100000),
         ];
     }
 }

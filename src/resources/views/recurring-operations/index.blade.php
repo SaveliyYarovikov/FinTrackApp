@@ -30,36 +30,19 @@
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700 text-sm text-gray-900 dark:text-gray-100">
                         @forelse ($operations as $operation)
                             @php
-                                $amount = number_format($operation->amount_minor / 100, 2, '.', '');
-                                $accountLabel = '—';
+                                $amount = number_format($operation->amount / 100, 2, '.', '');
+                                $accountLabel = $operation->account?->name ?? '—';
+                                $currency = $operation->account?->currency;
 
-                                if ($operation->type === \App\Models\RecurringOperation::TYPE_TRANSFER) {
-                                    $fromCurrency = $operation->fromAccount?->currency;
-                                    $toCurrency = $operation->toAccount?->currency;
-
-                                    $accountLabel = ($operation->fromAccount?->name ?? '—') . ' → ' . ($operation->toAccount?->name ?? '—');
-
-                                    if ($fromCurrency !== null) {
-                                        $amount = money_format_minor($operation->amount_minor, $fromCurrency);
-
-                                        if ($toCurrency !== null && $toCurrency !== $fromCurrency) {
-                                            $amount .= ' (' . $fromCurrency . '→' . $toCurrency . ')';
-                                        }
-                                    }
-                                } else {
-                                    $accountLabel = $operation->account?->name ?? '—';
-                                    $currency = $operation->account?->currency;
-
-                                    if ($currency !== null) {
-                                        $amount = money_format_minor($operation->amount_minor, $currency);
-                                    }
+                                if ($currency !== null) {
+                                    $amount = money_format_minor($operation->amount, $currency);
                                 }
                             @endphp
                             <tr>
                                 <td class="py-3 pr-4">{{ $operation->name }}</td>
                                 <td class="py-3 pr-4">{{ ucfirst($operation->type) }}</td>
                                 <td class="py-3 pr-4">{{ $accountLabel }}</td>
-                                <td class="py-3 pr-4">{{ $operation->type === \App\Models\RecurringOperation::TYPE_TRANSFER ? '—' : ($operation->category?->name ?? '—') }}</td>
+                                <td class="py-3 pr-4">{{ $operation->category?->name ?? '—' }}</td>
                                 <td class="py-3 pr-4">{{ $amount }}</td>
                                 <td class="py-3">
                                     <div class="flex items-center gap-3 text-xs uppercase">

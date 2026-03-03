@@ -39,15 +39,14 @@ class AccountController extends Controller
     public function store(StoreAccountRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        $openingBalanceMinor = Money::parseMajorToMinor((string) $validated['opening_balance']);
+        $initialBalanceMinor = Money::parseMajorToMinor((string) $validated['balance']);
 
         Account::query()->create([
             'user_id' => $request->user()->id,
             'name' => $validated['name'],
             'currency' => $validated['currency'],
             'type' => $validated['type'],
-            'opening_balance_minor' => $openingBalanceMinor,
-            'balance_minor' => $openingBalanceMinor,
+            'balance' => $initialBalanceMinor,
         ]);
 
         return redirect()
@@ -70,7 +69,7 @@ class AccountController extends Controller
         $account->update([
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'balance_minor' => Money::parseMajorToMinor((string) $validated['balance']),
+            'balance' => Money::parseMajorToMinor((string) $validated['balance']),
         ]);
 
         return redirect()

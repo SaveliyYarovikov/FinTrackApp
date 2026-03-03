@@ -36,9 +36,9 @@
                     </div>
 
                     <div>
-                        <x-input-label for="opening_balance" value="Opening Balance" />
-                        <x-text-input id="opening_balance" name="opening_balance" type="text" class="mt-1 block w-full" :value="old('opening_balance', '0.00')" required />
-                        <x-input-error :messages="$errors->get('opening_balance')" class="mt-2" />
+                        <x-input-label for="balance" value="Balance" />
+                        <x-text-input id="balance" name="balance" type="text" class="mt-1 block w-full" :value="old('balance', '0.00')" required />
+                        <x-input-error :messages="$errors->get('balance')" class="mt-2" />
                     </div>
 
                     <div class="flex justify-end gap-2">

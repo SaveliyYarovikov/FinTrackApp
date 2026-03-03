@@ -44,7 +44,7 @@
                                 <td class="py-3 pr-4">
                                     {{ $budget->period_start->toDateString() }} - {{ $budget->period_end->toDateString() }}
                                 </td>
-                                <td class="py-3 pr-4">{{ $formatMinor((int) $row['limit_minor']) }}</td>
+                                <td class="py-3 pr-4">{{ $formatMinor((int) $row['limit']) }}</td>
                                 <td class="py-3 pr-4">{{ $formatMinor((int) $row['spent_minor']) }}</td>
                                 <td class="py-3 pr-4 {{ $row['remaining_minor'] < 0 ? 'text-red-600' : 'text-emerald-600' }}">
                                     {{ $formatMinor((int) $row['remaining_minor']) }}

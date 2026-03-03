@@ -35,7 +35,7 @@
                                 <td class="py-3 pr-4">{{ $account->name }}</td>
                                 <td class="py-3 pr-4">{{ $account->currency }}</td>
                                 <td class="py-3 pr-4">{{ ucfirst($account->type) }}</td>
-                                <td class="py-3 pr-4">{{ money_format_minor($account->balance_minor, $account->currency) }}</td>
+                                <td class="py-3 pr-4">{{ money_format_minor($account->balance, $account->currency) }}</td>
                                 <td class="py-3 pr-4">
                                     @if ($account->isArchived())
                                         <span class="inline-flex rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-700">Archived</span>

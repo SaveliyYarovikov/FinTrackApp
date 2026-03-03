@@ -28,7 +28,6 @@ abstract class RecurringOperationRequest extends FormRequest
                 Rule::in([
                     RecurringOperation::TYPE_INCOME,
                     RecurringOperation::TYPE_EXPENSE,
-                    RecurringOperation::TYPE_TRANSFER,
                 ]),
             ],
             'amount' => [
@@ -47,11 +46,8 @@ abstract class RecurringOperationRequest extends FormRequest
                     }
                 },
             ],
-            'description' => ['nullable', 'string', 'max:255'],
             'account_id' => [
-                Rule::requiredIf(fn (): bool => $this->isIncomeOrExpense()),
-                Rule::prohibitedIf(fn (): bool => $this->isTransfer()),
-                'nullable',
+                'required',
                 'integer',
                 function (string $attribute, mixed $value, Closure $fail): void {
                     if ($value === null || $value === '') {
@@ -61,35 +57,7 @@ abstract class RecurringOperationRequest extends FormRequest
                     $this->validateOwnedActiveAccount((int) $value, $fail, 'Selected account is invalid.');
                 },
             ],
-            'from_account_id' => [
-                Rule::requiredIf(fn (): bool => $this->isTransfer()),
-                Rule::prohibitedIf(fn (): bool => ! $this->isTransfer()),
-                'nullable',
-                'integer',
-                function (string $attribute, mixed $value, Closure $fail): void {
-                    if ($value === null || $value === '') {
-                        return;
-                    }
-
-                    $this->validateOwnedActiveAccount((int) $value, $fail, 'Source account is invalid.');
-                },
-            ],
-            'to_account_id' => [
-                Rule::requiredIf(fn (): bool => $this->isTransfer()),
-                Rule::prohibitedIf(fn (): bool => ! $this->isTransfer()),
-                'nullable',
-                'integer',
-                'different:from_account_id',
-                function (string $attribute, mixed $value, Closure $fail): void {
-                    if ($value === null || $value === '') {
-                        return;
-                    }
-
-                    $this->validateOwnedActiveAccount((int) $value, $fail, 'Destination account is invalid.');
-                },
-            ],
             'category_id' => [
-                Rule::prohibitedIf(fn (): bool => $this->isTransfer()),
                 'nullable',
                 'integer',
                 function (string $attribute, mixed $value, Closure $fail): void {
@@ -118,16 +86,12 @@ abstract class RecurringOperationRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $amount = $this->input('amount');
-        $description = $this->input('description');
 
         $this->merge([
             'name' => trim((string) $this->input('name', '')),
             'type' => $this->normalizedType(),
             'amount' => is_string($amount) ? trim($amount) : $amount,
-            'description' => is_string($description) ? trim($description) : $description,
             'account_id' => $this->normalizeNullableInt('account_id'),
-            'from_account_id' => $this->normalizeNullableInt('from_account_id'),
-            'to_account_id' => $this->normalizeNullableInt('to_account_id'),
             'category_id' => $this->normalizeNullableInt('category_id'),
         ]);
     }
@@ -159,20 +123,6 @@ abstract class RecurringOperationRequest extends FormRequest
     private function normalizedType(): string
     {
         return strtolower(trim((string) $this->input('type', '')));
-    }
-
-    private function isTransfer(): bool
-    {
-        return $this->normalizedType() === RecurringOperation::TYPE_TRANSFER;
-    }
-
-    private function isIncomeOrExpense(): bool
-    {
-        return in_array(
-            $this->normalizedType(),
-            [RecurringOperation::TYPE_INCOME, RecurringOperation::TYPE_EXPENSE],
-            true,
-        );
     }
 
     private function categoryTypeColumnExists(): bool

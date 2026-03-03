@@ -30,7 +30,7 @@ class StoreAccountRequest extends FormRequest
             ],
             'currency' => ['required', 'string', 'size:3', Rule::in(config('fintrack.supported_currencies', []))],
             'type' => ['required', 'string', Rule::in([Account::TYPE_CARD, Account::TYPE_SAVINGS])],
-            'opening_balance' => ['required', 'string', 'regex:/^-?\d+(\.\d{1,2})?$/'],
+            'balance' => ['required', 'string', 'regex:/^-?\d+(\.\d{1,2})?$/'],
         ];
     }
 

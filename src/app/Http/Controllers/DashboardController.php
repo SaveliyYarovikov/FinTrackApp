@@ -41,7 +41,7 @@ class DashboardController extends Controller
 
         $currencyTotals = $accounts
             ->groupBy('currency')
-            ->map(static fn (Collection $accountsByCurrency): int => (int) $accountsByCurrency->sum('balance_minor'))
+            ->map(static fn (Collection $accountsByCurrency): int => (int) $accountsByCurrency->sum('balance'))
             ->sortKeys();
 
         $selectedAccountId = isset($validated['account_id'])
@@ -67,15 +67,15 @@ class DashboardController extends Controller
 
         $totalIncomeMinor = (int) (clone $baseTransactionsQuery)
             ->where('type', Transaction::TYPE_INCOME)
-            ->sum('amount_minor');
+            ->sum('amount');
 
         $totalExpenseMinorAbs = abs((int) (clone $baseTransactionsQuery)
             ->where('type', Transaction::TYPE_EXPENSE)
-            ->sum('amount_minor'));
+            ->sum('amount'));
 
         $expensesGroupedByCategory = (clone $baseTransactionsQuery)
             ->where('type', Transaction::TYPE_EXPENSE)
-            ->selectRaw('category_id, SUM(amount_minor) as total_minor')
+            ->selectRaw('category_id, SUM(amount) as total_minor')
             ->groupBy('category_id')
             ->get()
             ->map(static function (object $row): array {

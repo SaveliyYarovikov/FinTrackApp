@@ -33,7 +33,7 @@ class BudgetService
             ->where('category_id', $category->id)
             ->where('occurred_at', '>=', $start)
             ->where('occurred_at', '<', $end)
-            ->sum('amount_minor');
+            ->sum('amount');
 
         return abs($sum);
     }
@@ -42,7 +42,7 @@ class BudgetService
      * @return array<int, array{
      *     category: Category,
      *     budget: Budget,
-     *     limit_minor: int,
+     *     limit: int,
      *     spent_minor: int,
      *     remaining_minor: int,
      *     progress_percent: float
@@ -67,7 +67,7 @@ class BudgetService
             ->map(function (Budget $budget) use ($user): array {
                 /** @var Category $category */
                 $category = $budget->category;
-                $limitMinor = (int) $budget->limit_minor;
+                $limitMinor = (int) $budget->limit;
                 $spentMinor = $this->calculateSpentMinor(
                     $user,
                     $category,
@@ -82,7 +82,7 @@ class BudgetService
                 return [
                     'category' => $category,
                     'budget' => $budget,
-                    'limit_minor' => $limitMinor,
+                    'limit' => $limitMinor,
                     'spent_minor' => $spentMinor,
                     'remaining_minor' => $remainingMinor,
                     'progress_percent' => $progressPercent,

@@ -19,13 +19,13 @@ class Budget extends Model
         'category_id',
         'period_start',
         'period_end',
-        'limit_minor',
+        'limit',
     ];
 
     protected function casts(): array
     {
         return [
-            'limit_minor' => MoneyMinorCast::class,
+            'limit' => MoneyMinorCast::class,
             'period_start' => 'date',
             'period_end' => 'date',
         ];

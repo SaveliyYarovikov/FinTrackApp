@@ -73,10 +73,9 @@ class FinancialGoalService
      */
     public function calculateProgress(FinancialGoal $goal, Account $account): array
     {
-        $currentBalanceMinor = (int) $account->balance_minor;
-        $startBalanceMinor = (int) $goal->start_balance_minor;
-        $targetAmountMinor = (int) $goal->target_amount_minor;
-        $savedMinor = max(0, $currentBalanceMinor - $startBalanceMinor);
+        $currentBalanceMinor = (int) $account->balance;
+        $targetAmountMinor = (int) $goal->target_amount;
+        $savedMinor = max(0, $currentBalanceMinor);
         $remainingMinor = $targetAmountMinor - $savedMinor;
         $progressPercent = $targetAmountMinor > 0
             ? (int) min(100, round(($savedMinor / $targetAmountMinor) * 100))

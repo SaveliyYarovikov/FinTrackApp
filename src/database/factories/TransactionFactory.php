@@ -22,10 +22,9 @@ class TransactionFactory extends Factory
             'user_id' => static fn (array $attributes): int => (int) Account::query()->find($attributes['account_id'])->user_id,
             'category_id' => null,
             'type' => Transaction::TYPE_EXPENSE,
-            'amount_minor' => -$this->faker->numberBetween(100, 100000),
+            'amount' => -$this->faker->numberBetween(100, 100000),
             'description' => $this->faker->optional()->sentence(),
             'occurred_at' => now(),
-            'transfer_id' => null,
         ];
     }
 
@@ -33,7 +32,7 @@ class TransactionFactory extends Factory
     {
         return $this->state(fn (): array => [
             'type' => Transaction::TYPE_INCOME,
-            'amount_minor' => $this->faker->numberBetween(100, 100000),
+            'amount' => $this->faker->numberBetween(100, 100000),
         ]);
     }
 }

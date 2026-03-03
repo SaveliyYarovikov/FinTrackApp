@@ -16,31 +16,20 @@ class RecurringOperation extends Model
 
     public const TYPE_INCOME = 'income';
     public const TYPE_EXPENSE = 'expense';
-    public const TYPE_TRANSFER = 'transfer';
 
     protected $fillable = [
         'user_id',
         'name',
         'type',
-        'amount_minor',
+        'amount',
         'account_id',
-        'from_account_id',
-        'to_account_id',
         'category_id',
-        'description',
-        'schedule',
-        'interval',
-        'starts_at',
-        'ends_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'amount_minor' => MoneyMinorCast::class,
-            'interval' => 'integer',
-            'starts_at' => 'date',
-            'ends_at' => 'date',
+            'amount' => MoneyMinorCast::class,
         ];
     }
 
@@ -57,16 +46,6 @@ class RecurringOperation extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'account_id');
-    }
-
-    public function fromAccount(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'from_account_id');
-    }
-
-    public function toAccount(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'to_account_id');
     }
 
     public function category(): BelongsTo

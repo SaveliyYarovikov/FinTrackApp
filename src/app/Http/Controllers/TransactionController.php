@@ -69,6 +69,7 @@ class TransactionController extends Controller
 
         $recurringOperations = RecurringOperation::query()
             ->forUser($request->user()->id)
+            ->whereIn('type', [RecurringOperation::TYPE_INCOME, RecurringOperation::TYPE_EXPENSE])
             ->orderBy('name')
             ->get();
 
@@ -173,14 +174,8 @@ class TransactionController extends Controller
             ->with('status', 'Expense recorded.');
     }
 
-    public function edit(Request $request, Transaction $entry): View|RedirectResponse
+    public function edit(Request $request, Transaction $entry): View
     {
-        if ($entry->transfer_id !== null) {
-            return redirect()
-                ->route('transactions.index')
-                ->withErrors(['entry' => 'Transfer entries cannot be edited.']);
-        }
-
         return view('transactions.edit', [
             'entry' => $entry->load(['account', 'category']),
             'categories' => Category::query()
@@ -199,7 +194,7 @@ class TransactionController extends Controller
                 $request->user(),
                 $entry,
                 [
-                    'amount_minor' => Money::parseMajorToMinor((string) $validated['amount']),
+                    'amount' => Money::parseMajorToMinor((string) $validated['amount']),
                     'description' => $validated['description'] ?? null,
                     'category_id' => $validated['category_id'] ?? null,
                 ],

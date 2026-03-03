@@ -1,6 +1,6 @@
 @php
     $isCreateMode = ($goal ?? null) === null;
-    $defaultAmount = old('amount', isset($goal) ? number_format((int) $goal->target_amount_minor / 100, 2, '.', '') : '');
+    $defaultAmount = old('amount', isset($goal) ? number_format((int) $goal->target_amount / 100, 2, '.', '') : '');
     $selectedStatus = old('status', $goal->status ?? \App\Models\FinancialGoal::STATUS_ACTIVE);
 @endphp
 

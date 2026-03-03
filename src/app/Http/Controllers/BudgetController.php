@@ -45,7 +45,7 @@ class BudgetController extends Controller
             'category_id' => (int) $validated['category_id'],
             'period_start' => (string) $validated['period_start'],
             'period_end' => (string) $validated['period_end'],
-            'limit_minor' => Money::parseMajorToMinor((string) $validated['amount']),
+            'limit' => Money::parseMajorToMinor((string) $validated['amount']),
         ]);
 
         return redirect()
@@ -73,7 +73,7 @@ class BudgetController extends Controller
             'category_id' => (int) $validated['category_id'],
             'period_start' => (string) $validated['period_start'],
             'period_end' => (string) $validated['period_end'],
-            'limit_minor' => Money::parseMajorToMinor((string) $validated['amount']),
+            'limit' => Money::parseMajorToMinor((string) $validated['amount']),
         ]);
 
         return redirect()

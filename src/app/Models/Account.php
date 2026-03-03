@@ -24,16 +24,14 @@ class Account extends Model
         'name',
         'currency',
         'type',
-        'opening_balance_minor',
-        'balance_minor',
+        'balance',
         'archived_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'opening_balance_minor' => MoneyMinorCast::class,
-            'balance_minor' => MoneyMinorCast::class,
+            'balance' => MoneyMinorCast::class,
             'archived_at' => 'datetime',
         ];
     }

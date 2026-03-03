@@ -40,7 +40,7 @@
                             name="amount"
                             type="text"
                             class="mt-1 block w-full"
-                            :value="old('amount', number_format($budget->limit_minor / 100, 2, '.', ''))"
+                            :value="old('amount', number_format($budget->limit / 100, 2, '.', ''))"
                             required
                         />
                         <x-input-error :messages="$errors->get('amount')" class="mt-2" />

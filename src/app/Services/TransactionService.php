@@ -42,12 +42,12 @@ class TransactionService
                 'account_id' => $lockedAccount->id,
                 'category_id' => $resolvedCategory?->id,
                 'type' => Transaction::TYPE_INCOME,
-                'amount_minor' => $amountMinor,
+                'amount' => $amountMinor,
                 'description' => $description,
                 'occurred_at' => Carbon::parse($occurredAt),
             ]);
 
-            $this->applyDelta($lockedAccount, $entry->amount_minor);
+            $this->applyDelta($lockedAccount, $entry->amount);
 
             return $entry->fresh(['account', 'category']);
         });
@@ -80,12 +80,12 @@ class TransactionService
                 'account_id' => $lockedAccount->id,
                 'category_id' => $resolvedCategory?->id,
                 'type' => Transaction::TYPE_EXPENSE,
-                'amount_minor' => $amountMinor,
+                'amount' => $amountMinor,
                 'description' => $description,
                 'occurred_at' => Carbon::parse($occurredAt),
             ]);
 
-            $this->applyDelta($lockedAccount, $entry->amount_minor);
+            $this->applyDelta($lockedAccount, $entry->amount);
 
             return $entry->fresh(['account', 'category']);
         });
@@ -105,19 +105,15 @@ class TransactionService
                 throw new DomainException('You cannot update another user\'s entry.');
             }
 
-            if ($lockedEntry->transfer_id !== null) {
-                throw new DomainException('Transfer entries must be changed by deleting and recreating transfer.');
-            }
-
             $newType = (string) ($attributes['type'] ?? $lockedEntry->type);
 
             if (! in_array($newType, [Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE, Transaction::TYPE_ADJUSTMENT], true)) {
                 throw new DomainException('Unsupported entry type.');
             }
 
-            $newAmount = array_key_exists('amount_minor', $attributes)
-                ? (int) $attributes['amount_minor']
-                : $lockedEntry->amount_minor;
+            $newAmount = array_key_exists('amount', $attributes)
+                ? (int) $attributes['amount']
+                : $lockedEntry->amount;
 
             if ($newType === Transaction::TYPE_INCOME && $newAmount <= 0) {
                 throw new DomainException('Income amount must be greater than zero.');
@@ -153,9 +149,9 @@ class TransactionService
             }
 
             if ($oldAccount->id === $newAccount->id) {
-                $this->applyDelta($oldAccount, $newAmount - $lockedEntry->amount_minor);
+                $this->applyDelta($oldAccount, $newAmount - $lockedEntry->amount);
             } else {
-                $this->applyDelta($oldAccount, -$lockedEntry->amount_minor);
+                $this->applyDelta($oldAccount, -$lockedEntry->amount);
                 $this->applyDelta($newAccount, $newAmount);
             }
 
@@ -163,7 +159,7 @@ class TransactionService
                 'account_id' => $newAccount->id,
                 'category_id' => $resolvedCategory?->id,
                 'type' => $newType,
-                'amount_minor' => $newAmount,
+                'amount' => $newAmount,
                 'description' => $attributes['description'] ?? $lockedEntry->description,
                 'occurred_at' => isset($attributes['occurred_at'])
                     ? Carbon::parse((string) $attributes['occurred_at'])
@@ -186,43 +182,10 @@ class TransactionService
             if ($lockedEntry->user_id !== $user->id) {
                 throw new DomainException('You cannot delete another user\'s entry.');
             }
+            $lockedAccount = $this->lockOwnedAccounts($user, [$lockedEntry->account_id])->first();
 
-            if ($lockedEntry->transfer_id === null) {
-                $lockedAccount = $this->lockOwnedAccounts($user, [$lockedEntry->account_id])->first();
-
-                $this->applyDelta($lockedAccount, -$lockedEntry->amount_minor);
-                $lockedEntry->delete();
-
-                return;
-            }
-
-            $transferEntries = Transaction::query()
-                ->where('user_id', $user->id)
-                ->where('transfer_id', $lockedEntry->transfer_id)
-                ->lockForUpdate()
-                ->get();
-
-            $accountIds = $transferEntries
-                ->pluck('account_id')
-                ->unique()
-                ->values()
-                ->all();
-
-            $lockedAccounts = $this->lockOwnedAccounts($user, $accountIds);
-
-            foreach ($transferEntries as $transferEntry) {
-                $account = $lockedAccounts->get($transferEntry->account_id);
-
-                if ($account === null) {
-                    throw new DomainException('Transfer account must belong to the authenticated user.');
-                }
-
-                $this->applyDelta($account, -$transferEntry->amount_minor);
-            }
-
-            Transaction::query()
-                ->whereIn('id', $transferEntries->pluck('id'))
-                ->delete();
+            $this->applyDelta($lockedAccount, -$lockedEntry->amount);
+            $lockedEntry->delete();
         });
     }
 
@@ -296,12 +259,12 @@ class TransactionService
     private function applyDelta(Account $account, int $delta): void
     {
         if ($delta > 0) {
-            $account->increment('balance_minor', $delta);
+            $account->increment('balance', $delta);
             return;
         }
 
         if ($delta < 0) {
-            $account->decrement('balance_minor', abs($delta));
+            $account->decrement('balance', abs($delta));
         }
     }
 }

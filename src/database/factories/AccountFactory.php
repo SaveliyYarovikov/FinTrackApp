@@ -22,8 +22,7 @@ class AccountFactory extends Factory
             'name' => $this->faker->unique()->word(),
             'currency' => 'EUR',
             'type' => Account::TYPE_CASH,
-            'opening_balance_minor' => 0,
-            'balance_minor' => 0,
+            'balance' => 0,
             'archived_at' => null,
         ];
     }

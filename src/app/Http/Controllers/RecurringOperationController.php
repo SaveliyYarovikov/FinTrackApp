@@ -29,7 +29,7 @@ class RecurringOperationController extends Controller
     {
         $operations = RecurringOperation::query()
             ->forUser($request->user()->id)
-            ->with(['account', 'fromAccount', 'toAccount', 'category'])
+            ->with(['account', 'category'])
             ->orderBy('name')
             ->paginate(25);
 
@@ -121,37 +121,16 @@ class RecurringOperationController extends Controller
      */
     private function buildPayload(array $validated, int $userId): array
     {
-        $type = (string) $validated['type'];
-
-        $payload = [
+        return [
             'user_id' => $userId,
             'name' => (string) $validated['name'],
-            'type' => $type,
-            'amount_minor' => Money::parseMajorToMinor((string) $validated['amount']),
-            'description' => $validated['description'] ?? null,
-            'schedule' => null,
-            'interval' => null,
-            'starts_at' => null,
-            'ends_at' => null,
+            'type' => (string) $validated['type'],
+            'amount' => Money::parseMajorToMinor((string) $validated['amount']),
+            'account_id' => (int) $validated['account_id'],
+            'category_id' => isset($validated['category_id']) && $validated['category_id'] !== null
+                ? (int) $validated['category_id']
+                : null,
         ];
-
-        if ($type === RecurringOperation::TYPE_TRANSFER) {
-            $payload['account_id'] = null;
-            $payload['category_id'] = null;
-            $payload['from_account_id'] = (int) $validated['from_account_id'];
-            $payload['to_account_id'] = (int) $validated['to_account_id'];
-
-            return $payload;
-        }
-
-        $payload['account_id'] = (int) $validated['account_id'];
-        $payload['category_id'] = isset($validated['category_id']) && $validated['category_id'] !== null
-            ? (int) $validated['category_id']
-            : null;
-        $payload['from_account_id'] = null;
-        $payload['to_account_id'] = null;
-
-        return $payload;
     }
 
     /**

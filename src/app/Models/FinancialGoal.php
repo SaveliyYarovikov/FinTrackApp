@@ -22,8 +22,7 @@ class FinancialGoal extends Model
         'account_id',
         'name',
         'description',
-        'target_amount_minor',
-        'start_balance_minor',
+        'target_amount',
         'target_date',
         'status',
     ];
@@ -31,8 +30,7 @@ class FinancialGoal extends Model
     protected function casts(): array
     {
         return [
-            'target_amount_minor' => 'integer',
-            'start_balance_minor' => 'integer',
+            'target_amount' => 'integer',
             'target_date' => 'date',
         ];
     }

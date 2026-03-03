@@ -34,7 +34,7 @@
                                 @foreach ($accounts as $account)
                                     <li class="flex items-center justify-between gap-3">
                                         <span class="font-medium">{{ $account->name }}</span>
-                                        <span>{{ money_format_minor((int) $account->balance_minor, $account->currency) }}</span>
+                                        <span>{{ money_format_minor((int) $account->balance, $account->currency) }}</span>
                                     </li>
                                 @endforeach
                             </ul>

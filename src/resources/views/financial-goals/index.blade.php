@@ -54,7 +54,7 @@
                             <tr>
                                 <td class="py-3 pr-4">{{ $goal->name }}</td>
                                 <td class="py-3 pr-4">{{ $account->name }}</td>
-                                <td class="py-3 pr-4">{{ money_format_minor((int) $goal->target_amount_minor, $currency) }}</td>
+                                <td class="py-3 pr-4">{{ money_format_minor((int) $goal->target_amount, $currency) }}</td>
                                 <td class="py-3 pr-4">{{ money_format_minor((int) $row['saved_minor'], $currency) }}</td>
                                 <td class="py-3 pr-4">{{ money_format_minor($remainingMinor, $currency) }}</td>
                                 <td class="py-3 pr-4">

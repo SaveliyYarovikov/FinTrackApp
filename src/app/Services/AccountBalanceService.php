@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Account;
-use App\Models\Transaction;
 
 class AccountBalanceService
 {
@@ -13,11 +12,7 @@ class AccountBalanceService
     {
         $resolvedAccount = $this->resolveAccount($account);
 
-        $entriesSum = (int) Transaction::query()
-            ->where('account_id', $resolvedAccount->id)
-            ->sum('amount_minor');
-
-        return (int) $resolvedAccount->opening_balance_minor + $entriesSum;
+        return (int) $resolvedAccount->balance;
     }
 
     /**
@@ -26,7 +21,7 @@ class AccountBalanceService
     public function reconcile(Account|int $account): array
     {
         $resolvedAccount = $this->resolveAccount($account);
-        $cached = (int) $resolvedAccount->balance_minor;
+        $cached = (int) $resolvedAccount->balance;
         $recalculated = $this->recalculate($resolvedAccount);
         $difference = $recalculated - $cached;
 
@@ -44,7 +39,7 @@ class AccountBalanceService
         $resolvedAccount = $this->resolveAccount($account);
         $recalculated = $this->recalculate($resolvedAccount);
 
-        $resolvedAccount->balance_minor = $recalculated;
+        $resolvedAccount->balance = $recalculated;
         $resolvedAccount->save();
 
         return $resolvedAccount->refresh();

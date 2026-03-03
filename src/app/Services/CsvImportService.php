@@ -274,8 +274,7 @@ class CsvImportService
                     'name' => $accountName,
                     'type' => Account::TYPE_CARD,
                     'currency' => 'RUB',
-                    'opening_balance_minor' => 0,
-                    'balance_minor' => 0,
+                    'balance' => 0,
                 ]);
             } catch (QueryException) {
                 $account = Account::query()
@@ -361,7 +360,7 @@ class CsvImportService
             ->where('user_id', $user->id)
             ->where('account_id', $accountId)
             ->where('occurred_at', $occurredAt)
-            ->where('amount_minor', $amountMinor);
+            ->where('amount', $amountMinor);
 
         if ($description === null) {
             $query->whereNull('description');

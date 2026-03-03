@@ -23,17 +23,16 @@ class Transaction extends Model
         'account_id',
         'category_id',
         'type',
-        'amount_minor',
+        'amount',
         'description',
         'occurred_at',
-        'transfer_id',
     ];
 
     protected function casts(): array
     {
         return [
             'occurred_at' => 'datetime',
-            'amount_minor' => MoneyMinorCast::class,
+            'amount' => MoneyMinorCast::class,
         ];
     }
 

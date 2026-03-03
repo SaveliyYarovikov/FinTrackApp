@@ -56,8 +56,7 @@ class FinancialGoalController extends Controller
             'account_id' => $account->id,
             'name' => (string) $validated['name'],
             'description' => $validated['description'] ?? null,
-            'target_amount_minor' => Money::parseMajorToMinor((string) $validated['amount']),
-            'start_balance_minor' => (int) $account->balance_minor,
+            'target_amount' => Money::parseMajorToMinor((string) $validated['amount']),
             'target_date' => $validated['target_date'] ?? null,
             'status' => FinancialGoal::STATUS_ACTIVE,
         ]);
@@ -85,7 +84,7 @@ class FinancialGoalController extends Controller
         $financialGoal->update([
             'name' => (string) $validated['name'],
             'description' => $validated['description'] ?? null,
-            'target_amount_minor' => Money::parseMajorToMinor((string) $validated['amount']),
+            'target_amount' => Money::parseMajorToMinor((string) $validated['amount']),
             'target_date' => $validated['target_date'] ?? null,
             'status' => $validated['status'] ?? $financialGoal->status,
         ]);

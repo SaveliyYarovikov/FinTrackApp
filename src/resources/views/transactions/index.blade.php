@@ -177,14 +177,12 @@
                                 <td class="py-3 pr-4">{{ $entry->category?->name ?? '—' }}</td>
                                 <td class="py-3 pr-4">{{ $entry->description ?? '—' }}</td>
                                 <td class="py-3 pr-4">{{ ucfirst($entry->type) }}</td>
-                                <td class="py-3 pr-4 {{ $entry->amount_minor >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                    {{ money_format_minor($entry->amount_minor, $entry->account->currency) }}
+                                <td class="py-3 pr-4 {{ $entry->amount >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                                    {{ money_format_minor($entry->amount, $entry->account->currency) }}
                                 </td>
                                 <td class="py-3">
                                     <div class="flex items-center gap-3">
-                                        @if ($entry->transfer_id === null)
-                                            <a href="{{ route('transactions.edit', $entry) }}" class="text-indigo-600 hover:text-indigo-500 text-xs uppercase">Edit</a>
-                                        @endif
+                                        <a href="{{ route('transactions.edit', $entry) }}" class="text-indigo-600 hover:text-indigo-500 text-xs uppercase">Edit</a>
 
                                         <form method="POST" action="{{ route('transactions.destroy', $entry) }}" onsubmit="return confirm('Delete entry?');">
                                             @csrf

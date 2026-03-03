@@ -33,7 +33,7 @@
                             name="balance"
                             type="text"
                             class="mt-1 block w-full"
-                            :value="old('balance', number_format($account->balance_minor / 100, 2, '.', ''))"
+                            :value="old('balance', number_format($account->balance / 100, 2, '.', ''))"
                             required
                         />
                         <x-input-error :messages="$errors->get('balance')" class="mt-2" />
