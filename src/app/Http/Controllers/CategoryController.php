@@ -49,8 +49,10 @@ class CategoryController extends Controller
             ->with('status', 'Category created successfully.');
     }
 
-    public function edit(Category $category): View
+    public function edit(Request $request, Category $category): View
     {
+        $this->ensureOwnership($request, $category);
+
         return view('categories.edit', [
             'category' => $category,
         ]);
@@ -58,6 +60,8 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
+        $this->ensureOwnership($request, $category);
+
         $category->update($request->validated());
 
         return redirect()
@@ -108,5 +112,10 @@ class CategoryController extends Controller
         return redirect()
             ->route('categories.index')
             ->with('status', 'Category deleted successfully.');
+    }
+
+    private function ensureOwnership(Request $request, Category $category): void
+    {
+        abort_unless($category->user_id === $request->user()->id, 403);
     }
 }

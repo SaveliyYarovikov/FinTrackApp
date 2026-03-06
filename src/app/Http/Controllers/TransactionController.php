@@ -176,6 +176,8 @@ class TransactionController extends Controller
 
     public function edit(Request $request, Transaction $entry): View
     {
+        $this->ensureOwnership($request, $entry);
+
         return view('transactions.edit', [
             'entry' => $entry->load(['account', 'category']),
             'categories' => Category::query()
@@ -187,6 +189,8 @@ class TransactionController extends Controller
 
     public function update(UpdateTransactionRequest $request, Transaction $entry): RedirectResponse
     {
+        $this->ensureOwnership($request, $entry);
+
         $validated = $request->validated();
 
         try {
@@ -266,5 +270,10 @@ class TransactionController extends Controller
         return redirect()
             ->route('transactions.index')
             ->with('status', 'Entry deleted.');
+    }
+
+    private function ensureOwnership(Request $request, Transaction $entry): void
+    {
+        abort_unless($entry->user_id === $request->user()->id, 403);
     }
 }

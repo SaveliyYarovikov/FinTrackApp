@@ -54,8 +54,10 @@ class AccountController extends Controller
             ->with('status', 'Account created successfully.');
     }
 
-    public function edit(Account $account): View
+    public function edit(Request $request, Account $account): View
     {
+        $this->ensureOwnership($request, $account);
+
         return view('accounts.edit', [
             'account' => $account,
             'accountTypes' => [Account::TYPE_CARD, Account::TYPE_SAVINGS],
@@ -64,6 +66,8 @@ class AccountController extends Controller
 
     public function update(UpdateAccountRequest $request, Account $account): RedirectResponse
     {
+        $this->ensureOwnership($request, $account);
+
         $validated = $request->validated();
 
         $account->update([
@@ -79,6 +83,8 @@ class AccountController extends Controller
 
     public function archive(Request $request, Account $account): RedirectResponse
     {
+        $this->ensureOwnership($request, $account);
+
         if (! $account->isArchived()) {
             $account->archived_at = now();
             $account->save();
@@ -87,5 +93,10 @@ class AccountController extends Controller
         return redirect()
             ->route('accounts.index')
             ->with('status', 'Account archived.');
+    }
+
+    private function ensureOwnership(Request $request, Account $account): void
+    {
+        abort_unless($account->user_id === $request->user()->id, 403);
     }
 }

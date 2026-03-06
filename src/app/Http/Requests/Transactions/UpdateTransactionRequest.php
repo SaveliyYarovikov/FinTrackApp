@@ -13,7 +13,12 @@ class UpdateTransactionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        /** @var Transaction|null $entry */
+        $entry = $this->route('entry');
+
+        return $entry !== null
+            && $this->user() !== null
+            && $entry->user_id === $this->user()->id;
     }
 
     public function rules(): array
